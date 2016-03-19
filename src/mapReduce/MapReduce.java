@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+// How's the bai??
+
 public class MapReduce {
         
         public static void main(String[] args) {
