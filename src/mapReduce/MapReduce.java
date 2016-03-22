@@ -5,69 +5,58 @@
 package mapReduce;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class MapReduce {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 
-		// the problem:
+		long startTime = System.nanoTime();
 
-		// from here (INPUT)
-
-		// "file1.txt" => "foo foo bar cat dog dog"
-		// "file2.txt" => "foo house cat cat dog"
-		// "file3.txt" => "foo foo foo bird"
-
-		// we want to go to here (OUTPUT)
-
-		// "foo" => { "file1.txt" => 2, "file3.txt" => 3, "file2.txt" => 1 }
-		// "bar" => { "file1.txt" => 1 }
-		// "cat" => { "file2.txt" => 2, "file1.txt" => 1 }
-		// "dog" => { "file2.txt" => 1, "file1.txt" => 2 }
-		// "house" => { "file2.txt" => 1 }
-		// "bird" => { "file3.txt" => 1 }
-
-		// in plain English we want to
-
-		// Given a set of files with contents
-		// we want to index them by word
-		// so I can return all files that contain a given word
-		// together with the number of occurrences of that word
-		// without any sorting
-
+		MapReduce mp = new MapReduce();
 		////////////
 		// INPUT:
 		///////////
-		
-		String s1 = args[0]; 
+
+		String s1 = args[0];
 		File file1 = new File(s1);
 		String s2 = args[1];
 		File file2 = new File(s2);
 		String s3 = args[2];
 		File file3 = new File(s3);
 
-		//Set number of threads to be executed to 5.
+		String file1Contents = mp.readWordsFromFile(file1);
+		String file2Contents = mp.readWordsFromFile(file2);
+		;
+		String file3Contents = mp.readWordsFromFile(file3);
+		;
+
+		// Set number of threads to be executed to 5.
 		ExecutorService executor = Executors.newFixedThreadPool(5);
 
 		Map<String, String> input = new HashMap<String, String>();
-		input.put("file1.txt", "foo foo bar cat dog dog");
-		input.put("file2.txt", "foo house cat cat dog");
-		input.put("file3.txt", "foo foo foo bird");
 
-// APPROACH #3: Distributed MapReduce
+		input.put(file1.getName(), file1Contents);
+		input.put(file2.getName(), file2Contents);
+		input.put(file3.getName(), file3Contents);
+
+		// APPROACH #3: Distributed MapReduce
 		final Map<String, Map<String, Integer>> output = new HashMap<String, Map<String, Integer>>();
 
-/*******************************************************************************************
- * MAP:
- */
+		/*******************************************************************************************
+		 * MAP:
+		 */
 		final List<MappedItem> mappedItems = new LinkedList<MappedItem>();
 		final MapCallback<String, MappedItem> mapCallback = new MapCallback<String, MappedItem>() {
 			@Override
@@ -102,9 +91,10 @@ public class MapReduce {
 		// When finished shut down all the threads.
 		executor.shutdown();
 		// Wait until executor is finished and shutdown.
-		while (!executor.isTerminated());
+		while (!executor.isTerminated())
+			;
 
-// GROUP:
+		// GROUP:
 		Map<String, List<String>> groupedItems = new HashMap<String, List<String>>();
 
 		Iterator<MappedItem> mappedIter = mappedItems.iterator();
@@ -120,9 +110,9 @@ public class MapReduce {
 			list.add(file);
 		}
 
-/*******************************************************************************************
- * REDUCE:
- */
+		/*******************************************************************************************
+		 * REDUCE:
+		 */
 		final ReduceCallback<String, String, Integer> reduceCallback = new ReduceCallback<String, String, Integer>() {
 			@Override
 			public synchronized void reduceDone(String k, Map<String, Integer> v) {
@@ -130,7 +120,7 @@ public class MapReduce {
 			}
 		};
 
-		//Re-initialise executor object.
+		// Re-initialise executor object.
 		executor = Executors.newFixedThreadPool(5);
 
 		List<Thread> reduceCluster = new ArrayList<Thread>(groupedItems.size());
@@ -159,9 +149,14 @@ public class MapReduce {
 		// When finished shut down all the threads.
 		executor.shutdown();
 		// Wait until executor is finished and shutdown.
-		while (!executor.isTerminated());
+		while (!executor.isTerminated())
+			;
 
 		System.out.println(output);
+		long endTime = System.nanoTime();
+		double seconds = ((double) (endTime - startTime) / 1000000000);
+
+		System.out.println("Time taken to execute: \n" + seconds + " SECONDS");
 	}
 
 	/************************************************************************************************
@@ -219,6 +214,27 @@ public class MapReduce {
 			}
 		}
 		callback.reduceDone(word, reducedList);
+	}
+
+	// Returns a string of every word in a file.
+	public String readWordsFromFile(File file) throws IOException {
+
+		StringBuilder sb = new StringBuilder();
+		Scanner scan1 = null;
+		try {
+			scan1 = new Scanner(file);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		while (scan1.hasNextLine()) {
+			Scanner scan2 = new Scanner(scan1.nextLine());
+			while (scan2.hasNext()) {
+				String s = scan2.next();
+				sb.append(s + " ");
+			}
+		}
+		return sb.toString();
 	}
 
 	private static class MappedItem {
