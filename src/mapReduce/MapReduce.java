@@ -145,14 +145,14 @@ public class MapReduce {
 		// When finished shut down all the threads.
 		executor.shutdown();
 		// Wait until executor is finished and shutdown.
-		while (!executor.isTerminated())
-			;
+		while (!executor.isTerminated());
 
 		System.out.println(output);
+		System.out.println("Number of threads being run \n-> " + numThreads);
 		long endTime = System.nanoTime();
 		double seconds = ((double) (endTime - startTime) / 1000000000);
 
-		System.out.println("Time taken to execute: \n" + seconds + " SECONDS");
+		System.out.println("Time taken to execute \n-> " + seconds + " SECONDS");
 	}
 
 	/************************************************************************************************
