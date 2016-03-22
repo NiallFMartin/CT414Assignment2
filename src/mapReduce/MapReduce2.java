@@ -25,19 +25,21 @@ public class MapReduce2 {
 
 		MapReduce2 mp = new MapReduce2();
 
-		String s1 = args[0];
+		//import command line parameters - First value must be no. of threads
+		int numThreads = Integer.parseInt(args[0]);
+		String s1 = args[1];
 		File file1 = new File(s1);
-		String s2 = args[1];
+		String s2 = args[2];
 		File file2 = new File(s2);
-		String s3 = args[2];
+		String s3 = args[3];
 		File file3 = new File(s3);
 
 		String file1Contents = mp.readWordsFromFile(file1);
 		String file2Contents = mp.readWordsFromFile(file2);
 		String file3Contents = mp.readWordsFromFile(file3);
 
-		// Set number of threads to be executed to 5.
-		ExecutorService executor = Executors.newFixedThreadPool(5);
+		// Set number of threads to be executed to imported value.
+		ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
 		Map<String, String> input = new HashMap<String, String>();
 
