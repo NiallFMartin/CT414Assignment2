@@ -4,6 +4,7 @@
 
 package mapReduce;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,6 +46,13 @@ public class MapReduce {
 		////////////
 		// INPUT:
 		///////////
+		
+		String s1 = args[0]; 
+		File file1 = new File(s1);
+		String s2 = args[1];
+		File file2 = new File(s2);
+		String s3 = args[2];
+		File file3 = new File(s3);
 
 		//Set number of threads to be executed to 5.
 		ExecutorService executor = Executors.newFixedThreadPool(5);
