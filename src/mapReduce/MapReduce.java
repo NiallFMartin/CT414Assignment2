@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class MapReduce {
 
@@ -25,9 +24,6 @@ public class MapReduce {
 		long startTime = System.nanoTime();
 
 		MapReduce mp = new MapReduce();
-		////////////
-		// INPUT:
-		///////////
 
 		String s1 = args[0];
 		File file1 = new File(s1);
@@ -38,9 +34,7 @@ public class MapReduce {
 
 		String file1Contents = mp.readWordsFromFile(file1);
 		String file2Contents = mp.readWordsFromFile(file2);
-		;
 		String file3Contents = mp.readWordsFromFile(file3);
-		;
 
 		// Set number of threads to be executed to 5.
 		ExecutorService executor = Executors.newFixedThreadPool(5);
