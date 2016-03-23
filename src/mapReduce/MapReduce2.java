@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,7 +42,7 @@ public class MapReduce2 {
 		// Set number of threads to be executed to imported value.
 		ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
-		Map<String, String> input = new HashMap<String, String>();
+		Map<String, String> input = new ConcurrentHashMap<String, String>();
 
 		input.put(file1.getName(), file1Contents);
 		input.put(file2.getName(), file2Contents);
@@ -91,7 +92,7 @@ public class MapReduce2 {
 			;
 
 		// GROUP:
-		Map<String, List<String>> groupedItems = new HashMap<String, List<String>>();
+		Map<String, List<String>> groupedItems = new ConcurrentHashMap<String, List<String>>();
 
 		Iterator<MappedItem> mappedIter = mappedItems.iterator();
 		while (mappedIter.hasNext()) {
@@ -145,14 +146,14 @@ public class MapReduce2 {
 		// When finished shut down all the threads.
 		executor.shutdown();
 		// Wait until executor is finished and shutdown.
-		while (!executor.isTerminated())
-			;
+		while (!executor.isTerminated());
 
 		System.out.println(output);
+		System.out.println("Number of threads being run \n-> " + numThreads);
 		long endTime = System.nanoTime();
 		double seconds = ((double) (endTime - startTime) / 1000000000);
 
-		System.out.println("Time taken to execute: \n" + seconds + " SECONDS");
+		System.out.println("Time taken to execute \n-> " + seconds + " SECONDS");
 	}
 
 	/************************************************************************************************
