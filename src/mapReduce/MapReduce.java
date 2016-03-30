@@ -21,8 +21,6 @@ public class MapReduce {
 
 	public static void main(String[] args) throws IOException {
 
-		long startTime = System.nanoTime();
-
 		MapReduce mp = new MapReduce();
 
 		//import command line parameters - First value must be no. of threads
@@ -41,6 +39,8 @@ public class MapReduce {
 		// Set number of threads to be executed to imported value.
 		ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
+		long startTime = System.nanoTime();
+		
 		Map<String, String> input = new HashMap<String, String>();
 
 		input.put(file1.getName(), file1Contents);
