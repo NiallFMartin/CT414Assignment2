@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -54,7 +54,7 @@ public class MapReduce2 {
 		/*******************************************************************************************
 		 * MAP:
 		 */
-		final List<MappedItem> mappedItems = new LinkedList<MappedItem>();
+		final List<MappedItem> mappedItems = new CopyOnWriteArrayList<MappedItem>();
 		final MapCallback<String, MappedItem> mapCallback = new MapCallback<String, MappedItem>() {
 			@Override
 			public synchronized void mapDone(String file, List<MappedItem> results) {
@@ -101,7 +101,7 @@ public class MapReduce2 {
 			String file = item.getFile();
 			List<String> list = groupedItems.get(word);
 			if (list == null) {
-				list = new LinkedList<String>();
+				list = new CopyOnWriteArrayList<String>();
 				groupedItems.put(word, list);
 			}
 			list.add(file);
