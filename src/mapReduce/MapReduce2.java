@@ -73,7 +73,7 @@ public class MapReduce2 {
 			Thread t = new Thread(new Runnable() {
 				@Override
 				public void run() {
-					map(file, contents, mapCallback);
+					map(file, contents, mappedItems);
 				}
 			});
 			// Add Thread t to List of threads.
@@ -110,12 +110,6 @@ public class MapReduce2 {
 		/*******************************************************************************************
 		 * REDUCE:
 		 */
-		final ReduceCallback<String, String, Integer> reduceCallback = new ReduceCallback<String, String, Integer>() {
-			@Override
-			public synchronized void reduceDone(String k, Map<String, Integer> v) {
-				output.put(k, v);
-			}
-		};
 
 		// Re-initialise executor object.
 		executor = Executors.newFixedThreadPool(5);
@@ -131,7 +125,7 @@ public class MapReduce2 {
 			Thread t = new Thread(new Runnable() {
 				@Override
 				public void run() {
-					reduce(word, list, reduceCallback);
+					reduce(word, list, output);
 				}
 			});
 			// Add Thread t to List of threads.
@@ -154,6 +148,7 @@ public class MapReduce2 {
 		double seconds = ((double) (endTime - startTime) / 1000000000);
 
 		System.out.println("Time taken to execute \n-> " + seconds + " SECONDS");
+		System.out.println("Part 3 - Thread safe");
 	}
 
 	/************************************************************************************************
@@ -183,15 +178,6 @@ public class MapReduce2 {
 	public static interface MapCallback<E, V> {
 
 		public void mapDone(E key, List<V> values);
-	}
-
-	public static void map(String file, String contents, MapCallback<String, MappedItem> callback) {
-		String[] words = contents.trim().split("\\s+");
-		List<MappedItem> results = new ArrayList<MappedItem>(words.length);
-		for (String word : words) {
-			results.add(new MappedItem(word, file));
-		}
-		callback.mapDone(file, results);
 	}
 
 	public static interface ReduceCallback<E, K, V> {
